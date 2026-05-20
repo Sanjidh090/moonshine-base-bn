@@ -18,13 +18,13 @@ Strategy:
   3. Write chunked WAVs + clean metadata for training
 
 Input:
-  - F:\Sanjid_2203090_Kminds\Lipi-Ghor-bn-882-SSTT\metadata.csv
-  - F:\Sanjid_2203090_Kminds\Lipi-Ghor-bn-882-SSTT\data\<video_id>.mp3
+  - F:\Dataset\Lipi-Ghor-bn-882-SSTT\metadata.csv
+  - F:\Dataset\Lipi-Ghor-bn-882-SSTT\data\<video_id>.mp3
 
 Output:
-  - F:\Sanjid_2203090_Kminds\lipi-ghor-training-ready\wavs_asr_chunks\wavs\<chunk>.wav
-  - F:\Sanjid_2203090_Kminds\lipi-ghor-training-ready\wavs_asr_chunks\metadata.csv
-  - F:\Sanjid_2203090_Kminds\lipi-ghor-training-ready\lipi-ghor\train.tsv / dev.tsv / test.tsv
+  - F:\Dataset\lipi-ghor-training-ready\wavs_asr_chunks\wavs\<chunk>.wav
+  - F:\Dataset\lipi-ghor-training-ready\wavs_asr_chunks\metadata.csv
+  - F:\Dataset\lipi-ghor-training-ready\lipi-ghor\train.tsv / dev.tsv / test.tsv
 """
 
 import csv
@@ -42,7 +42,7 @@ import soundfile as sf
 from tqdm import tqdm
 
 # ── FFmpeg Configuration ──────────────────────────────────────────────────────
-venv_bin = Path(r"f:\Sanjid_2203090_Kminds\venv\Scripts")
+venv_bin = Path(r"f:\Dataset\venv\Scripts")
 FFMPEG   = str(venv_bin / "ffmpeg.exe")
 FFPROBE  = str(venv_bin / "ffprobe.exe")
 os.environ["PATH"] += os.pathsep + str(venv_bin)
@@ -51,8 +51,8 @@ os.environ["PATH"] += os.pathsep + str(venv_bin)
 # ═══════════════════════════════════════════════════════════════════════════════
 #  CONFIGURATION
 # ═══════════════════════════════════════════════════════════════════════════════
-DATASET_ROOT  = Path(r"F:\Sanjid_2203090_Kminds\Lipi-Ghor-bn-882-SSTT")
-OUTPUT_ROOT   = Path(r"F:\Sanjid_2203090_Kminds\lipi-ghor-training-ready")
+DATASET_ROOT  = Path(r"F:\Dataset\Lipi-Ghor-bn-882-SSTT")
+OUTPUT_ROOT   = Path(r"F:\Dataset\lipi-ghor-training-ready")
 METADATA_CSV  = DATASET_ROOT / "metadata.csv"
 DATA_DIR      = DATASET_ROOT / "data"
 TEMP_WAV_DIR  = OUTPUT_ROOT / "temp_full_wavs"   # full converted WAVs (can delete after)
@@ -430,13 +430,13 @@ from pydub import AudioSegment
 #  CONFIGURATION
 # ═══════════════════════════════════════════════════════════════════════════════
 # 1. Your Master CSV
-INPUT_CSV = Path(r"F:\Sanjid_2203090_Kminds\Lipi-Ghor-bn-882-SSTT\metadata.csv")
+INPUT_CSV = Path(r"F:\Dataset\Lipi-Ghor-bn-882-SSTT\metadata.csv")
 
 # 2. Where the FULL WAVs from your screenshot are
-WAV_SOURCE_DIR = Path(r"F:\Sanjid_2203090_Kminds\lipi-ghor-training-ready\temp_full_wavs")
+WAV_SOURCE_DIR = Path(r"F:\Dataset\lipi-ghor-training-ready\temp_full_wavs")
 
 # 3. Where you want the final chunks and training files to go
-OUTPUT_ROOT = Path(r"D:\Kminds_Sanjidh090_dataset\Lipighor_wavs")
+OUTPUT_ROOT = Path(r"D:\Dataset\Lipighor_wavs")
 
 SPLIT         = {"train": 0.90, "dev": 0.05, "test": 0.05}
 RANDOM_SEED   = 42
