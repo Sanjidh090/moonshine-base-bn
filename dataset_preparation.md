@@ -1,11 +1,6 @@
 # The dataset in Lipighor 882 hour!
 
-but first let's download lipighor from huggingface.
-```python
-git lfs install
-
-git clone https://huggingface.co/datasets/Sanjidh090/Lipi-Ghor-bn-882-SSTT
-```
+but first let's download lipighor 882 sstt bn from huggingface.
 then you get files in mp3 format...do some setup and installations and do install audio libraries such as ffmpeg...
 
 then ,
