@@ -1,304 +1,198 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tokenizer Transplantation: Edge-Efficient Bengali ASR</title>
-<meta name="description" content="Mitigating autoregressive collapse in edge-efficient Bengali ASR via tokenizer transplantation on Moonshine-Base.">
+  <meta charset="utf-8">
+  <meta name="description" content="Tokenizer Transplantation: Mitigating Autoregressive Collapse in Edge-Efficient Bengali ASR">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tokenizer Transplantation: Edge-Efficient Bengali ASR</title>
 
-<!--
-  This page follows the Academic Project Page Template
-  (https://github.com/eliahuhorwitz/Academic-project-page-template),
-  the same template used by jonkahana.github.io/probelog/.
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
 
-  TODO before publishing:
-  1. Replace every <img src="assets/..."> placeholder below with your own
-     figure. Filenames are just labeled slots (teaser / tokenizer / recovery
-     / results) — swap in whichever image you want for each.
-  2. Replace PAPER_LINK_PLACEHOLDER with the real PDF / arXiv link.
-  3. Confirm affiliation line (defaulted to KUET only).
-  4. Replace the draft abstract with the final accepted text.
-  5. Fill in Limitations.
--->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-
-<style>
-  :root{
-    --text:#363636;
-    --text-light:#4a4a4a;
-    --bg:#ffffff;
-    --link:#3273dc;
-    --link-dark:#1d4f9e;
-    --btn-bg:#363636;
-    --btn-text:#ffffff;
-    --rule:#e5e5e5;
-    --fig-bg:#fafafa;
-    --max:880px;
-  }
-
-  *{ box-sizing:border-box; }
-
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Noto Sans', Arial, sans-serif;
-    font-size:16px;
-    line-height:1.7;
-  }
-
-  a{ color:var(--link); text-decoration:none; }
-  a:hover{ color:var(--link-dark); text-decoration:underline; }
-
-  .container{
-    max-width:var(--max);
-    margin:0 auto;
-    padding:0 24px;
-  }
-
-  /* ---------- Hero ---------- */
-
-  .hero{
-    text-align:center;
-    padding:64px 0 36px;
-  }
-
-  .title{
-    font-size:clamp(22px, 3.6vw, 30px);
-    font-weight:700;
-    line-height:1.35;
-    margin:0 0 22px;
-  }
-
-  .authors{ font-size:17px; margin:0 0 6px; }
-  .authors a{ color:var(--text); }
-  .authors a:hover{ color:var(--link); }
-
-  .affiliations{
-    font-size:14.5px;
-    color:var(--text-light);
-    margin:0 0 26px;
-  }
-
-  .buttons{
-    display:flex;
-    justify-content:center;
-    gap:12px;
-    flex-wrap:wrap;
-  }
-
-  .button{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    background:var(--btn-bg);
-    color:var(--btn-text);
-    font-size:14.5px;
-    font-weight:500;
-    padding:10px 22px;
-    border-radius:24px;
-  }
-
-  .button:hover{ opacity:0.82; text-decoration:none; color:var(--btn-text); }
-  .button svg{ width:16px; height:16px; }
-
-  /* ---------- Figures (placeholder slots) ---------- */
-
-  figure{ margin:40px 0 0; text-align:center; }
-
-  figure img{
-    max-width:100%;
-    border:1px solid var(--rule);
-    border-radius:6px;
-    background:var(--fig-bg);
-    display:block;
-    margin:0 auto;
-  }
-
-  figcaption{
-    font-size:13.5px;
-    color:var(--text-light);
-    margin:12px auto 0;
-    max-width:680px;
-  }
-
-  .teaser-summary{
-    font-size:16px;
-    font-weight:600;
-    text-align:center;
-    max-width:760px;
-    margin:24px auto 0;
-  }
-
-  /* ---------- Sections ---------- */
-
-  section{
-    padding:36px 0;
-    border-top:1px solid var(--rule);
-  }
-
-  h2{
-    font-size:21px;
-    font-weight:700;
-    text-align:center;
-    margin:0 0 18px;
-  }
-
-  .prose{
-    max-width:760px;
-    margin:0 auto;
-    text-align:justify;
-    font-size:15.5px;
-  }
-
-  /* ---------- BibTeX ---------- */
-
-  pre{
-    background:#f5f5f5;
-    border:1px solid var(--rule);
-    border-radius:6px;
-    padding:20px;
-    font-size:13px;
-    overflow-x:auto;
-    max-width:760px;
-    margin:0 auto;
-    line-height:1.6;
-    color:var(--text);
-  }
-
-  /* ---------- Footer ---------- */
-
-  footer{
-    padding:32px 0 56px;
-    text-align:center;
-    font-size:13px;
-    color:#9a9a9a;
-  }
-
-  footer a{ color:#9a9a9a; }
-  footer a:hover{ color:var(--link); }
-</style>
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    .title { font-family: 'Google Sans', sans-serif; }
+    .publication-title { font-size: 2.5rem; font-weight: 700; line-height: 1.2; }
+    .publication-authors { font-size: 1.25rem; margin-top: 1rem; }
+    .author-block { display: inline-block; margin-right: 15px; }
+    .publication-venue { font-size: 1.1rem; color: #555; margin-top: 0.5rem; margin-bottom: 1.5rem; }
+    .link-block a { margin: 5px; }
+    .teaser-image { max-width: 100%; border-radius: 8px; margin-bottom: 1rem; }
+    .content h2 { margin-top: 2em; margin-bottom: 1em; font-family: 'Google Sans', sans-serif; font-weight: 600; }
+  </style>
 </head>
 <body>
 
-<header class="hero container">
-  <h1 class="title">Tokenizer Transplantation: Mitigating Autoregressive Collapse<br>in Edge-Efficient Bengali ASR</h1>
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          
+          <div class="is-flex is-justify-content-center is-align-items-center mb-5" style="gap: 30px;">
+            <img src="assets/icml-logo.png" alt="ICML Logo" style="max-height: 65px;">
+            <img src="MuslimsInML-LOGO-Landscape (1).png" alt="Muslims in ML Logo" style="max-height: 60px;">
+          </div>
 
-  <p class="authors">Sanjid Hasan<sup>1</sup>, Md. Abdur Rahman<sup>2</sup></p>
-  <p class="affiliations"><sup>1</sup>Khulna University of Engineering &amp; Technology (KUET) &middot;</p>
+          <h1 class="title is-1 publication-title">
+            Tokenizer Transplantation: Mitigating Autoregressive Collapse in Edge-Efficient Bengali ASR
+          </h1>
+          
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <strong>Sanjid Hasan</strong><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <strong>Md. Abdur Rahman</strong><sup>2</sup>
+            </span>
+          </div>
 
-  <div class="buttons">
-    <a class="button" href="https://openreview.net/pdf?id=803uxwFQep">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-      Paper
-    </a>
-    <a class="button" href="https://github.com/Sanjidh090/moonshine-base-bn">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.9-2.78.62-3.37-1.21-3.37-1.21-.46-1.18-1.11-1.5-1.11-1.5-.91-.63.07-.62.07-.62 1 .07 1.53 1.04 1.53 1.04.89 1.55 2.34 1.1 2.91.84.09-.65.35-1.1.63-1.35-2.22-.26-4.56-1.13-4.56-5.03 0-1.11.39-2.02 1.03-2.73-.1-.26-.45-1.31.1-2.73 0 0 .84-.27 2.75 1.04a9.4 9.4 0 0 1 5 0c1.91-1.31 2.75-1.04 2.75-1.04.55 1.42.2 2.47.1 2.73.64.71 1.03 1.62 1.03 2.73 0 3.91-2.35 4.77-4.58 5.02.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49C19.13 20.6 22 16.77 22 12.25 22 6.58 17.52 2 12 2z"/></svg>
-      Code
-    </a>
-    <a class="button" href="https://huggingface.co/Sanjidh090/moonshine-base-bn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 9h.01M15 9h.01M8 14s1.5 2 4 2 4-2 4-2"/></svg>
-      Model
-    </a>
+          <div class="is-size-5 publication-venue">
+            <span class="author-block"><sup>1</sup>Khulna University of Engineering & Technology (KUET)</span><br>
+            <span class="author-block"><sup>2</sup>Military Institute of Science and Technology (MIST)</span><br>
+            <span class="author-block mt-3 has-text-weight-semibold">ICML 2026 &middot; MuslimML Workshop</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://openreview.net/pdf?id=803uxwFQep" class="button is-dark is-rounded">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/Sanjidh090/moonshine-base-bn" class="button is-dark is-rounded">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://huggingface.co/Sanjidh090/moonshine-base-bn" class="button is-dark is-rounded">
+                  <span class="icon">🤗</span>
+                  <span>Model</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</header>
+</section>
 
-<main class="container">
+<section class="section pt-0">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <img src="assets/images/ChatGPT Image Jun 22, 2026, 02_14_28 AM.png" alt="Pipeline Teaser" class="teaser-image">
+        <h2 class="subtitle has-text-centered is-size-6 mt-3">
+          We replace Moonshine-Base's English byte-level decoder vocabulary with BanglaBERT's WordPiece vocabulary, cutting token fertility from 9.16 to 1.30 tokens per word and stabilizing autoregressive Bengali ASR decoding.
+        </h2>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- Teaser: replace with whichever figure you choose -->
-  <figure>
-    <img src="assets/images/ChatGPT Image Jun 22, 2026, 02_14_28 AM.png" alt="Teaser figure">
-  </figure>
-  <p class="teaser-summary">We replace Moonshine-Base's English byte-level decoder vocabulary with BanglaBERT's WordPiece vocabulary, cutting token fertility from 9.16 to 1.30 tokens per word and stabilizing autoregressive Bengali ASR decoding.</p>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Lightweight speech recognition models are critical for edge deployment, yet highly optimized architectures like Moonshine often fail on morphologically rich, non-Latin languages such as Bengali. This study identifies the root cause of this failure as the model's English-centric byte-level tokenizer, which fragments Bengali words into high-fertility byte chains and triggers catastrophic autoregressive collapse during inference.
+          </p>
+          <p>
+            To resolve this, a novel vocabulary transplantation pipeline is proposed to replace the decoder vocabulary with the native-script BanglaBERT WordPiece vocabulary and resize the corresponding token embedding matrix. Experimental results demonstrate a reduction in token fertility from 9.16 to 1.30. By decreasing autoregressive sequence length by 85.8%, decoding instability is entirely mitigated. When evaluated on the 882-hour Lipi-Ghor dataset, the modified architecture achieves a competitive 21.54% Word Error Rate (WER) and a Real-Time Factor (RTF) of 0.0053.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- Abstract -->
-  <!-- DRAFT — replace with the final accepted abstract text. -->
-  <section>
-    <h2>Abstract</h2>
-    <p class="prose">
-      Moonshine-Base ships with a byte-level decoder vocabulary tuned for English,
-      which fragments Bengali text into long token sequences and destabilizes
-      autoregressive decoding under low-resource fine-tuning. We propose tokenizer
-      transplantation: replacing the model's native decoder vocabulary with
-      BanglaBERT's WordPiece vocabulary, reducing token fertility from 9.16 to 1.30
-      tokens per word. Direct vocabulary substitution disrupts the decoder's learned
-      embedding space, so we recover performance through a two-stage ScheduleFree
-      AdamW fine-tuning schedule. The resulting 61.5M-parameter model reaches 21.54%
-      WER and 10.79% CER on the Lipi-Ghor-bn-882-SSTT test set, with a real-time
-      factor of 0.0053 on GPU.
-    </p>
-  </section>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Methodology</h2>
+        <div class="content has-text-justified">
+          <p>
+            Rather than training a model from scratch or replacing the vocabulary before fine-tuning—which often leads to catastrophic forgetting—our approach explicitly decouples acoustic representation learning from autoregressive language modeling.
+          </p>
+          <img src="assets/images/Screenshot_22-6-2026_19039_openreview.net.jpeg" alt="Two-Stage Transplant Recovery" style="width:100%; border: 1px solid #ddd; border-radius: 8px;">
+          <p class="is-size-7 has-text-centered mt-2">
+            <em>Figure 1. Overview of the Tokenizer Transplantation Methodology.</em>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- Tokenizer Transplantation -->
-  <section>
-    <h2>Tokenizer Transplantation</h2>
-    <p class="prose">
-      We replace Moonshine-Base's English byte-level decoder vocabulary with
-      BanglaBERT's native WordPiece vocabulary, mapping the special tokens
-      (&lang;CLS&rang;&rarr;BOS, &lang;SEP&rang;&rarr;EOS) so the decoder's input/output
-      space aligns with the new vocabulary. This reduces token fertility from
-      9.16 to 1.30 tokens per word, shortening the sequences the decoder must
-      autoregress over.
-    </p>
-  </section>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Lipi-Ghor Dataset Distribution</h2>
+        <div class="content has-text-justified">
+          <p>
+            Experiments utilize the Lipi-Ghor-882 dataset, an 882-hour multi-speaker Bengali corpus curated from diverse open-source media, featuring aggressive filtering via Voice Activity Detection (VAD).
+          </p>
+          <img src="assets/images/lipighor-donut (1).png" alt="Lipi-Ghor Dataset Distribution" style="width:100%; border-radius: 8px;">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- Recovery Fine-Tuning -->
-  <section>
-    <h2>Two-Stage Recovery Fine-Tuning</h2>
-    <p class="prose">
-      Swapping the vocabulary disrupts the decoder's learned embedding space, so
-      we recover performance in two stages: a high-learning-rate ScheduleFree
-      AdamW stage that re-stabilizes the decoder around the new vocabulary,
-      followed by a reduced-learning-rate stabilization stage with dynamic
-      masking enabled.
-    </p>
-    <figure>
-      <img src="assets/images/Screenshot_22-6-2026_19039_openreview.net.jpeg" alt="Recovery fine-tuning figure">
-    </figure>
-  </section>
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h2 class="title is-3 has-text-centered">Global ASR Performance & Efficiency</h2>
+        <div class="content has-text-justified">
+          <p>
+            The proposed transplanted Moonshine model achieves a competitive WER and the lowest CER while operating with significantly fewer parameters than the Whisper and Conformer baselines.
+          </p>
+          
+          <img src="assets/images/Screenshot_22-6-2026_1916_openreview.net.jpeg" alt="Table 2: Global ASR Performance Comparison" style="width:100%; margin-bottom: 2rem;">
+          
+          <p>
+            Furthermore, while standard architectures required heavily engineered pipelines to achieve real-time factors (RTF) of ~0.019, the proposed architecture achieves a blistering RTF of 0.0053 natively.
+          </p>
+          
+          <img src="assets/images/Screenshot_22-6-2026_19130_openreview.net.jpeg" alt="Table 3: Inference Efficiency" style="width:100%; max-width: 700px; display: block; margin: 0 auto;">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- Results -->
-  <section>
-    <h2>Results</h2>
-    <p class="prose">
-      On the Lipi-Ghor-bn-882-SSTT test set, our 61.5M-parameter model reaches
-      21.54% WER and 10.79% CER, with a real-time factor of 0.0053 on GPU &mdash;
-      competitive accuracy at a fraction of the parameters and latency of larger
-      ASR baselines.
-    </p>
-    <figure>
-      <img src="assets/images/Screenshot_22-6-2026_1916_openreview.net.jpeg" alt="Results figure">
-    </figure>
-  </section>
-
-  <!-- Limitations -->
-  <section>
-    <h2>Limitations</h2>
-    <p class="prose">Limitations section in progress &mdash; to be added.</p>
-  </section>
-
-  <!-- BibTeX -->
-  <section id="cite">
-    <h2>BibTeX</h2>
-    <pre id="bibtex">@inproceedings{hasan2026tokenizer,
-  title     = {Tokenizer Transplantation: Mitigating Autoregressive
-               Collapse in Edge-Efficient Bengali ASR},
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title is-3">BibTeX</h2>
+    <pre><code>@inproceedings{hasan2026tokenizer,
+  title     = {Tokenizer Transplantation: Mitigating Autoregressive Collapse in Edge-Efficient Bengali ASR},
   author    = {Hasan, Sanjid and Rahman, Md. Abdur},
-  booktitle = {ICML 2026 MuslimML Workshop},
+  booktitle = {Proceedings of the 43rd International Conference on Machine Learning (ICML) - MuslimML Workshop},
   year      = {2026}
-}</pre>
-  </section>
+}</code></pre>
+  </div>
+</section>
 
-</main>
-
-<footer>
-  <p>
-    This page was built using the
-    <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>.
-  </p>
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>
+        Website template borrowed from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Eliahu Horwitz</a>.
+      </p>
+    </div>
+  </div>
 </footer>
 
 </body>
