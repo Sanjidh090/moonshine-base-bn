@@ -118,13 +118,6 @@ Full usage details, the trained weights, and a live demo Space are on the [Huggi
 - Codec compression (as encountered in real-device ONNX deployment) degrades accuracy; not yet corrected for in training.
 - BanglaBERT's WordPiece tokenizer emits `[UNK]` for some common Bengali words — this is being investigated as it may understate true fertility gains (see `tokenizer_fertility_check.py`).
 
-## Roadmap
-
-- [ ] Codec augmentation during training
-- [ ] Spontaneous/telephony speech evaluation benchmark
-- [ ] Morphologically-aware tokenization
-- [ ] Multilingual extension (Arabic, Urdu) — targeting ICASSP 2027
-
 ## Citation
 
 ```bibtex
