@@ -5,6 +5,8 @@ Code and experiments for **"Tokenizer Transplantation: Mitigating Autoregressive
 This repo adapts [Moonshine-Base](https://huggingface.co/UsefulSensors/moonshine-base) (originally English, GPT-2 BPE tokenizer) to Bengali by transplanting a WordPiece vocabulary from [BanglaBERT](https://huggingface.co/csebuetnlp/banglabert), then fine-tuning on a 1.4M-sample unified Bengali speech corpus. The result is an edge-efficient Bengali ASR model — see the trained checkpoint and full model card on [Hugging Face](https://huggingface.co/Sanjidh090/moonshine-base-bn).
 
 # Project Page: [https://sanjidh090.github.io/moonshine-base-bn/](https://sanjidh090.github.io/moonshine-base-bn/)
+<img width="1774" height="848" alt="ChatGPT Image Jun 22, 2026, 02_14_28 AM" src="https://github.com/user-attachments/assets/d9e3082d-eed9-4bba-a0a8-4df022739bed" />
+
 ## Results
 
 Evaluated on the held-out test split of [Lipi-Ghor-bn-882-SSTT](https://huggingface.co/datasets/Sanjidh090/Lipi-Ghor-bn-882-SSTT):
