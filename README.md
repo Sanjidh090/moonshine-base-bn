@@ -2,6 +2,8 @@
 
 Code and experiments for **"Tokenizer Transplantation: Mitigating Autoregressive Collapse in Edge-Efficient Bengali ASR"**, accepted at the [MusIML Workshop, ICML 2026](https://icml.cc/).
 
+Paper: [https://arxiv.org/abs/2607.09598](https://arxiv.org/abs/2607.09598)
+
 This repo adapts [Moonshine-Base](https://huggingface.co/UsefulSensors/moonshine-base) (originally English, GPT-2 BPE tokenizer) to Bengali by transplanting a WordPiece vocabulary from [BanglaBERT](https://huggingface.co/csebuetnlp/banglabert), then fine-tuning on a 1.4M-sample unified Bengali speech corpus. The result is an edge-efficient Bengali ASR model — see the trained checkpoint and full model card on [Hugging Face](https://huggingface.co/Sanjidh090/moonshine-base-bn).
 
 # Project Page: [https://sanjidh090.github.io/moonshine-base-bn/](https://sanjidh090.github.io/moonshine-base-bn/)
@@ -132,6 +134,18 @@ Full usage details, the trained weights, and a live demo Space are on the [Huggi
 }
 ```
 
+## See it on arxiv
+```bibtex
+@misc{hasan2026tokenizertransplantationmitigatingautoregressive,
+      title={Tokenizer Transplantation: Mitigating Autoregressive Collapse in Edge-Efficient Bengali ASR}, 
+      author={Sanjid Hasan and Md. Abdur Rahman},
+      year={2026},
+      eprint={2607.09598},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2607.09598}, 
+}
+```
 ## Acknowledgments
 
 Built on [UsefulSensors/Moonshine](https://github.com/usefulsensors/moonshine) and [BanglaBERT](https://huggingface.co/csebuetnlp/banglabert) (CSEBUETNLP). Trained on [Lipi-Ghor-bn-882-SSTT](https://huggingface.co/datasets/Sanjidh090/Lipi-Ghor-bn-882-SSTT), with GPU support from the Department of CSE at Khulna University of Engineering & Technology (KUET).
