@@ -1,6 +1,6 @@
 # Moonshine-Base-BN: Tokenizer Transplantation for Bengali ASR
 
-Code and experiments for **"Tokenizer Transplantation: Mitigating Autoregressive Collapse in Edge-Efficient Bengali ASR"**, accepted at the [MusIML Workshop, ICML 2026](https://icml.cc/).
+Code and experiments for **"Tokenizer Transplantation: Mitigating Autoregressive Collapse in Edge-Efficient Bengali ASR"**, accepted at the [MusIML Workshop, ICML 2026](sanjidh090.github.io/moonshine-base-bn).
 
 Paper: [https://arxiv.org/abs/2607.09598](https://arxiv.org/abs/2607.09598)
 
